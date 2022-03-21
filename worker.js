@@ -237,7 +237,8 @@
       gtag('config', ${GA_TAG});
       </script>
       <script>
-      window.CONFIG.domainBaseUrl = "https://sixeleven.in";
+//      window.CONFIG.domainBaseUrl = "https://sixeleven.in";
+      window.CONFIG.domainBaseUrl = location.origin;
       const SLUG_TO_PAGE = ${JSON.stringify(this.SLUG_TO_PAGE)};
       const PAGE_TO_SLUG = {};
       const slugs = [];
