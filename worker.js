@@ -29,6 +29,7 @@
   const PAGE_TITLE = 'sixeleven';
   const PAGE_DESCRIPTION = 'Personal blog of @_rishitvora.';
   const PAGE_IMAGE = 'https://imgur.com/GoeWo91.png';
+  const CUSTOM_AVATAR = 'https://imgur.com/GoeWo91.png';
   const TWITTER_HANDLE = '@sixeleven_in'
   /* Step 4: enter a Google Font name, you can choose from https://fonts.google.com */
   const GOOGLE_FONT = 'Montserrat';
@@ -195,13 +196,28 @@
     }
   }
 
+  class LinkRewriter {
+    element(element) {
+      if (element.getAttribute('rel') === 'shortcut icon') {
+        element.setAttribute('href', CUSTOM_AVATAR);
+      }
+
+      if (element.getAttribute('rel') === 'apple-touch-icon') {
+        element.setAttribute('href', CUSTOM_AVATAR);
+      }
+    }
+  }
+
   class HeadRewriter {
     element(element) {
       if (GOOGLE_FONT !== '') {
         element.append(`<link href="https://fonts.googleapis.com/css?family=${GOOGLE_FONT.replace(' ', '+')}:Regular,Bold,Italic&display=swap" rel="stylesheet">
-        <style>* { font-family: "${GOOGLE_FONT}" !important; }</style>`, {
-         html: true
-        });
+        <style>
+            * { font-family: "${GOOGLE_FONT}" !important; }
+            a { font-weight: inherit !important; }
+        </style>`,
+        {html: true}
+        );
       }
 
       element.append(`<style>
@@ -299,6 +315,11 @@
         });
       }
       const observer = new MutationObserver(function() {
+        document.querySelectorAll('link').forEach((element) => {
+        if (element.getAttribute('rel') === 'shortcut icon') {
+            element.setAttribute('href', '${CUSTOM_AVATAR}');
+        }
+        });
         if (redirected) return;
         const nav = document.querySelector('.notion-topbar');
         const mobileNav = document.querySelector('.notion-topbar-mobile');
@@ -353,8 +374,8 @@
     return new HTMLRewriter()
       .on("title", new MetaRewriter())
       .on("meta", new MetaRewriter())
-      .on("link", new MetaRewriter())
       .on("head", new HeadRewriter())
+      .on("link", new LinkRewriter())
       .on("body", new BodyRewriter(SLUG_TO_PAGE))
       .transform(res);
   }
