@@ -1,217 +1,243 @@
 /* CONFIGURATION STARTS HERE */
 
-/* Step 1: enter your domain name like fruitionsite.com */
-const MY_DOMAIN = "fruitionsite.com";
+  /* Step 1: enter your domain name like www.(fruitionsite.com) and (fruition).notion.site */
+  const MY_DOMAIN = 'sixeleven.in';
+  const MY_NOTION_DOMAIN = "rishitvora";
+  /*
+   * Step 2: enter your URL slug to page ID mapping
+   * The key on the left is the slug (without the slash)
+   * The value on the right is the Notion page ID
+   */
+  const SLUG_TO_PAGE = {
+    '': '5b3773424d37402c863aa0fdb4be759f',
+    'about': '251de7ce25994c918fd19ca055e58d29',
+    'ideas': 'da3cd85340f141ce91e2e617b07cd2fb',
+    'conway': 'b52fc41ff62641fd8361da514d2ff618',
+    'analysis-1': 'ececaf357c9b4d9a83daca9de91b952f',
+    'analysis-2': '38f28424f13f4ee49a40edf2a52b4f8a',
+    'monty-hall': '5b7640ea3be641babb6e669ec22653d9',
+    'work': '70ab09376fbd4fa4bf5f51e029473b24',
+    'currying': '020bee1f5d0b474ba22554668bdf859c',
+    'codex': 'a91e5ceff8f44e1f8cf0e91d3164f58d',
+    'nnfs': '24da3342e91f485cb255ff8304535aae',
+    'nnfs/intro': '5bae4fe05ae14639990698ea1133f9e6',
+    'nnfs/neuron': '2327322b170343dfbb3c51ae68fae700',
+    'nnfs/codeopt': 'c153b4d906e247d3a83a331bcf2b26c2'
+  };
 
-/*
- * Step 2: enter your URL slug to page ID mapping
- * The key on the left is the slug (without the slash)
- * The value on the right is the Notion page ID
- */
-const SLUG_TO_PAGE = {
-  "": "771ef38657244c27b9389734a9cbff44",
-  thanks: "9d9864f5338b47b0a7f42e0f0e2bbf46",
-  showcase: "92053970e5084019ac096d2df7e7f440",
-  roadmap: "7d4b21bfb4534364972e8bf9f68c2c36"
-};
+  /* Step 3: enter your page title and description for SEO purposes */
+  const PAGE_TITLE = 'sixeleven';
+  const PAGE_DESCRIPTION = 'Personal blog of @_rishitvora.';
+  const PAGE_IMAGE = 'https://imgur.com/GoeWo91.png';
+  const TWITTER_HANDLE = '@sixeleven_in'
+  /* Step 4: enter a Google Font name, you can choose from https://fonts.google.com */
+  const GOOGLE_FONT = 'Montserrat';
 
-/* Step 3: enter your page title and description for SEO purposes */
-const PAGE_TITLE = "Fruition";
-const PAGE_DESCRIPTION =
-  "Free, Open Source Toolkit For Customizing Your Notion Page";
+  /* Step 5: enter any custom scripts you'd like */
+  const CUSTOM_SCRIPT = ``;
+  const GA_TAG = 'G-W4KJT065NM';
 
-/* Step 4: enter a Google Font name, you can choose from https://fonts.google.com */
-const GOOGLE_FONT = "Rubik";
+  /* CONFIGURATION ENDS HERE */
 
-/* Step 5: enter any custom scripts you'd like */
-const CUSTOM_SCRIPT = ``;
+  const PAGE_TO_SLUG = {};
+  const slugs = [];
+  const pages = [];
+  Object.keys(SLUG_TO_PAGE).forEach(slug => {
+    const page = SLUG_TO_PAGE[slug];
+    slugs.push(slug);
+    pages.push(page);
+    PAGE_TO_SLUG[page] = slug;
+  });
 
-/* CONFIGURATION ENDS HERE */
+  addEventListener('fetch', event => {
+    event.respondWith(fetchAndApply(event.request));
+  });
 
-const PAGE_TO_SLUG = {};
-const slugs = [];
-const pages = [];
-Object.keys(SLUG_TO_PAGE).forEach(slug => {
-  const page = SLUG_TO_PAGE[slug];
-  slugs.push(slug);
-  pages.push(page);
-  PAGE_TO_SLUG[page] = slug;
-});
-
-addEventListener("fetch", event => {
-  event.respondWith(fetchAndApply(event.request));
-});
-
-function generateSitemap() {
-  let sitemap = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-  slugs.forEach(
-    (slug) =>
-      (sitemap +=
-        "<url><loc>https://" + MY_DOMAIN + "/" + slug + "</loc></url>")
-  );
-  sitemap += "</urlset>";
-  return sitemap;
-}
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, HEAD, POST, PUT, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type"
-};
-
-function handleOptions(request) {
-  if (
-    request.headers.get("Origin") !== null &&
-    request.headers.get("Access-Control-Request-Method") !== null &&
-    request.headers.get("Access-Control-Request-Headers") !== null
-  ) {
-    // Handle CORS pre-flight request.
-    return new Response(null, {
-      headers: corsHeaders
-    });
-  } else {
-    // Handle standard OPTIONS request.
-    return new Response(null, {
-      headers: {
-        Allow: "GET, HEAD, POST, PUT, OPTIONS"
-      }
-    });
-  }
-}
-
-async function fetchAndApply(request) {
-  if (request.method === "OPTIONS") {
-    return handleOptions(request);
-  }
-  let url = new URL(request.url);
-  url.hostname = 'www.notion.so';
-  if (url.pathname === "/robots.txt") {
-    return new Response("Sitemap: https://" + MY_DOMAIN + "/sitemap.xml");
-  }
-  if (url.pathname === "/sitemap.xml") {
-    let response = new Response(generateSitemap());
-    response.headers.set("content-type", "application/xml");
-    return response;
-  }
-  let response;
-  if (url.pathname.startsWith("/app") && url.pathname.endsWith("js")) {
-    response = await fetch(url.toString());
-    let body = await response.text();
-    response = new Response(
-      body
-        .replace(/www.notion.so/g, MY_DOMAIN)
-        .replace(/notion.so/g, MY_DOMAIN),
-      response
+  function generateSitemap() {
+    let sitemap = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    slugs.forEach(
+      (slug) =>
+        (sitemap +=
+          '<url><loc>https://' + MY_DOMAIN + '/' + slug + '</loc></url>')
     );
-    response.headers.set("Content-Type", "application/x-javascript");
-    return response;
-  } else if (url.pathname.startsWith("/api")) {
-    // Forward API
-    response = await fetch(url.toString(), {
-      body: url.pathname.startsWith('/api/v3/getPublicPageData') ? null : request.body,
-      headers: {
-        "content-type": "application/json;charset=UTF-8",
-        "user-agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"
-      },
-      method: "POST"
-    });
-    response = new Response(response.body, response);
-    response.headers.set("Access-Control-Allow-Origin", "*");
-    return response;
-  } else if (slugs.indexOf(url.pathname.slice(1)) > -1) {
-    const pageId = SLUG_TO_PAGE[url.pathname.slice(1)];
-    return Response.redirect("https://" + MY_DOMAIN + "/" + pageId, 301);
-  } else if (
-    pages.indexOf(url.pathname.slice(1)) === -1 &&
-    url.pathname.slice(1).match(/[0-9a-f]{32}/)
-  ) {
-    return Response.redirect('https://' + MY_DOMAIN, 301);
-  } else {
-    response = await fetch(url.toString(), {
-      body: request.body,
-      headers: request.headers,
-      method: request.method
-    });
-    response = new Response(response.body, response);
-    response.headers.delete("Content-Security-Policy");
-    response.headers.delete("X-Content-Security-Policy");
+    sitemap += '</urlset>';
+    return sitemap;
   }
 
-  return appendJavascript(response, SLUG_TO_PAGE);
-}
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
 
-class MetaRewriter {
-  element(element) {
-    if (PAGE_TITLE !== "") {
-      if (
-        element.getAttribute("property") === "og:title" ||
-        element.getAttribute("name") === "twitter:title"
-      ) {
-        element.setAttribute("content", PAGE_TITLE);
-      }
-      if (element.tagName === "title") {
-        element.setInnerContent(PAGE_TITLE);
-      }
-    }
-    if (PAGE_DESCRIPTION !== "") {
-      if (
-        element.getAttribute("name") === "description" ||
-        element.getAttribute("property") === "og:description" ||
-        element.getAttribute("name") === "twitter:description"
-      ) {
-        element.setAttribute("content", PAGE_DESCRIPTION);
-      }
-    }
-    if (
-      element.getAttribute("property") === "og:url" ||
-      element.getAttribute("name") === "twitter:url"
-    ) {
-      element.setAttribute("content", MY_DOMAIN);
-    }
-    if (element.getAttribute("name") === "apple-itunes-app") {
-      element.remove();
-    }
-  }
-}
-
-class HeadRewriter {
-  element(element) {
-    if (GOOGLE_FONT !== "") {
-      element.append(
-        `<link href='https://fonts.googleapis.com/css?family=${GOOGLE_FONT.replace(' ', '+')}:Regular,Bold,Italic&display=swap' rel='stylesheet'>
-        <style>* { font-family: "${GOOGLE_FONT}" !important; }</style>`,
-        {
-          html: true
+  function handleOptions(request) {
+    if (request.headers.get('Origin') !== null &&
+      request.headers.get('Access-Control-Request-Method') !== null &&
+      request.headers.get('Access-Control-Request-Headers') !== null) {
+      // Handle CORS pre-flight request.
+      return new Response(null, {
+        headers: corsHeaders
+      });
+    } else {
+      // Handle standard OPTIONS request.
+      return new Response(null, {
+        headers: {
+          'Allow': 'GET, HEAD, POST, PUT, OPTIONS',
         }
-      );
+      });
     }
-    element.append(
-      `<style>
+  }
+
+  async function fetchAndApply(request) {
+    if (request.method === 'OPTIONS') {
+      return handleOptions(request);
+    }
+    let url = new URL(request.url);
+    url.hostname = MY_NOTION_DOMAIN + '.notion.site';
+    if (url.pathname === '/robots.txt') {
+      return new Response('Sitemap: https://' + MY_DOMAIN + '/sitemap.xml');
+    }
+    if (url.pathname === '/sitemap.xml') {
+      let response = new Response(generateSitemap());
+      response.headers.set('content-type', 'application/xml');
+      return response;
+    }
+    let fullPathname = request.url.replace("https://" + MY_DOMAIN, "");
+    let response;
+    if (url.pathname.endsWith('js')) {
+      response = await fetch(url.toString());
+      let body = await response.text();
+      response = new Response(body.replace(/www.notion.so/g, MY_DOMAIN).replace(/notion.so/g, MY_DOMAIN).replace(/${MY_NOTION_DOMAIN}.notion.site/g, MY_DOMAIN), response);
+      response.headers.set('Content-Type', 'application/x-javascript');
+      return response;
+    } else if ((url.pathname.startsWith('/api/v3/getPublicPageData'))) {
+        response = await fetch(url.toString(), {
+            body: request.body,
+            headers: {
+            'content-type': 'application/json;charset=UTF-8',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+            },
+            method: 'POST',
+            });
+        response = new Response(response.body, response);
+        response.headers.set('Access-Control-Allow-Origin', '*');
+        // response.body.delete('requireInterstitial');
+        return response;
+    } else if ((url.pathname.startsWith('/api'))) {
+        // Forward API
+        response = await fetch(url.toString(), {
+        // FIXME: hack
+        // body: request.body,
+        body: url.pathname.startsWith('/api/v3/getPublicPageData') ? null : request.body,
+        headers: {
+          'content-type': 'application/json;charset=UTF-8',
+          'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+        },
+        method: 'POST',
+      });
+      response = new Response(response.body, response);
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      return response;
+    } else if (slugs.indexOf(url.pathname.slice(1)) > -1) {
+      const pageId = SLUG_TO_PAGE[url.pathname.slice(1)];
+      return Response.redirect('https://' + MY_DOMAIN + '/' + pageId, 301);
+    } else {
+      response = await fetch(url.toString(), {
+        body: request.body,
+        headers: request.headers,
+        method: request.method,
+      });
+      response = new Response(response.body, response);
+      response.headers.delete('Content-Security-Policy');
+      response.headers.delete('X-Content-Security-Policy');
+    }
+
+    return appendJavascript(response, SLUG_TO_PAGE);
+  }
+
+  class MetaRewriter {
+    element(element) {
+      if (PAGE_TITLE !== '') {
+        if (element.getAttribute('property') === 'og:title'
+          || element.getAttribute('name') === 'twitter:title'
+          || element.getAttribute('property') === 'og:site_name') {
+          element.setAttribute('content', PAGE_TITLE);
+        }
+        if (element.tagName === 'title') {
+          element.setInnerContent(PAGE_TITLE);
+        }
+      }
+      if (TWITTER_HANDLE != '') {
+        if (element.getAttribute('name') === 'twitter:site') {
+          element.setAttribute('content', TWITTER_HANDLE)
+        }
+      }
+      if (PAGE_DESCRIPTION !== '') {
+        if (element.getAttribute('name') === 'description'
+          || element.getAttribute('property') === 'og:description'
+          || element.getAttribute('name') === 'twitter:description') {
+          element.setAttribute('content', PAGE_DESCRIPTION);
+        }
+      }
+      if (PAGE_IMAGE !== '') {
+        if (element.getAttribute('property') === 'og:image'
+          || element.getAttribute('name') === 'twitter:image') {
+          element.setAttribute('content', PAGE_IMAGE);
+        }
+      }
+      if (element.getAttribute('property') === 'og:url'
+        || element.getAttribute('name') === 'twitter:url') {
+        element.setAttribute('content', MY_DOMAIN);
+      }
+      if (element.getAttribute('name') === 'apple-itunes-app') {
+        element.remove();
+      }
+    }
+  }
+
+  class HeadRewriter {
+    element(element) {
+      if (GOOGLE_FONT !== '') {
+        element.append(`<link href="https://fonts.googleapis.com/css?family=${GOOGLE_FONT.replace(' ', '+')}:Regular,Bold,Italic&display=swap" rel="stylesheet">
+        <style>* { font-family: "${GOOGLE_FONT}" !important; }</style>`, {
+         html: true
+        });
+      }
+
+      element.append(`<style>
+      div.notion-page-controls > div {display: none !important; }
       div.notion-topbar > div > div:nth-child(3) { display: none !important; }
       div.notion-topbar > div > div:nth-child(4) { display: none !important; }
       div.notion-topbar > div > div:nth-child(5) { display: none !important; }
       div.notion-topbar > div > div:nth-child(6) { display: none !important; }
-      div.notion-topbar-mobile > div:nth-child(3) { display: none !important; }
-      div.notion-topbar-mobile > div:nth-child(4) { display: none !important; }
+      div.notion-topbar > div > div:nth-child(7) { display: none !important; }
+    //   div.notion-topbar-mobile > div:nth-child(3) { display: none !important; }
+    //   div.notion-topbar-mobile > div:nth-child(4) { display: block !important; }
+    //   div.notion-topbar-mobile > div:nth-child(5) { display: none !important; }
       div.notion-topbar > div > div:nth-child(1n).toggle-mode { display: block !important; }
       div.notion-topbar-mobile > div:nth-child(1n).toggle-mode { display: block !important; }
-      </style>`,
-      {
+      </style>`, {
         html: true
-      }
-    );
+      })
+    }
   }
-}
 
-class BodyRewriter {
-  constructor(SLUG_TO_PAGE) {
-    this.SLUG_TO_PAGE = SLUG_TO_PAGE;
-  }
-  element(element) {
-    element.append(
-      `<script>
-      window.CONFIG.domainBaseUrl = 'https://${MY_DOMAIN}';
+  class BodyRewriter {
+    constructor(SLUG_TO_PAGE) {
+      this.SLUG_TO_PAGE = SLUG_TO_PAGE;
+    }
+    element(element) {
+      element.append(`<div style="display:none"></div>
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_TAG}"></script>
+      <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', ${GA_TAG});
+      </script>
+      <script>
+      window.CONFIG.domainBaseUrl = "https://sixeleven.in";
       const SLUG_TO_PAGE = ${JSON.stringify(this.SLUG_TO_PAGE)};
       const PAGE_TO_SLUG = {};
       const slugs = [];
@@ -313,22 +339,21 @@ class BodyRewriter {
       };
       const open = window.XMLHttpRequest.prototype.open;
       window.XMLHttpRequest.prototype.open = function() {
-        arguments[1] = arguments[1].replace('${MY_DOMAIN}', 'www.notion.so');
+        arguments[1] = arguments[1].replace('${MY_DOMAIN}', '${MY_NOTION_DOMAIN}.notion.site');
         return open.apply(this, [].slice.call(arguments));
       };
-    </script>${CUSTOM_SCRIPT}`,
-      {
+    </script>${CUSTOM_SCRIPT}`, {
         html: true
-      }
-    );
+      });
+    }
   }
-}
 
-async function appendJavascript(res, SLUG_TO_PAGE) {
-  return new HTMLRewriter()
-    .on("title", new MetaRewriter())
-    .on("meta", new MetaRewriter())
-    .on("head", new HeadRewriter())
-    .on("body", new BodyRewriter(SLUG_TO_PAGE))
-    .transform(res);
-}
+  async function appendJavascript(res, SLUG_TO_PAGE) {
+    return new HTMLRewriter()
+      .on("title", new MetaRewriter())
+      .on("meta", new MetaRewriter())
+      .on("link", new MetaRewriter())
+      .on("head", new HeadRewriter())
+      .on("body", new BodyRewriter(SLUG_TO_PAGE))
+      .transform(res);
+  }
