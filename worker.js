@@ -11,6 +11,7 @@
   const SLUG_TO_PAGE = {
     '': '5b3773424d37402c863aa0fdb4be759f',
     'about': '251de7ce25994c918fd19ca055e58d29',
+    'essays': 'b401551ef8174a4083174520175e7c04',
     'ideas': 'da3cd85340f141ce91e2e617b07cd2fb',
     'conway': 'b52fc41ff62641fd8361da514d2ff618',
     'analysis-1': 'ececaf357c9b4d9a83daca9de91b952f',
@@ -22,17 +23,22 @@
     'nnfs': '24da3342e91f485cb255ff8304535aae',
     'nnfs/intro': '5bae4fe05ae14639990698ea1133f9e6',
     'nnfs/neuron': '2327322b170343dfbb3c51ae68fae700',
-    'nnfs/codeopt': 'c153b4d906e247d3a83a331bcf2b26c2'
+    'nnfs/codeopt': 'c153b4d906e247d3a83a331bcf2b26c2',
+    'sort-by-controversial': 'f82a11d25e984e7ea59f462e4429a2ee',
+    'digit-span': 'a669b6c033d84e7f8f4b6a2c8fb94fa3',
+    'diy-spacetime-curvature': '24e07f315ae449ba9ed81fc32ce8031c',
+    'metropolitan-man': '9a970269f81e4b01a12fffe0787996a4'
   };
 
   /* Step 3: enter your page title and description for SEO purposes */
   const PAGE_TITLE = 'sixeleven';
-  const PAGE_DESCRIPTION = 'Personal blog of @_rishitvora.';
+  const PAGE_DESCRIPTION = 'Personal blog of @specbug.';
   const PAGE_IMAGE = 'https://imgur.com/GoeWo91.png';
   const CUSTOM_AVATAR = 'https://imgur.com/GoeWo91.png';
-  const TWITTER_HANDLE = '@sixeleven_in'
+  const TWITTER_HANDLE = '@irishvora'
   /* Step 4: enter a Google Font name, you can choose from https://fonts.google.com */
   const GOOGLE_FONT = 'Montserrat';
+  const TEXT_SIZE = '18.2px';
 
   /* Step 5: enter any custom scripts you'd like */
   const CUSTOM_SCRIPT = ``;
@@ -205,6 +211,10 @@
       if (element.getAttribute('rel') === 'apple-touch-icon') {
         element.setAttribute('href', CUSTOM_AVATAR);
       }
+
+      if (element.getAttribute('rel') === 'icon') {
+        element.setAttribute('href', PAGE_IMAGE);
+      }
     }
   }
 
@@ -213,8 +223,10 @@
       if (GOOGLE_FONT !== '') {
         element.append(`<link href="https://fonts.googleapis.com/css?family=${GOOGLE_FONT.replace(' ', '+')}:Regular,Bold,Italic&display=swap" rel="stylesheet">
         <style>
-            * { font-family: "${GOOGLE_FONT}" !important; }
+            // * { font-family: "${GOOGLE_FONT}" !important; }
+            * {font-family: warnock-pro,Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif; font-style: normal; font-variant: normal; }
             a { font-weight: inherit !important; }
+            .notion-text-block { font-size: ${TEXT_SIZE}; font-weight: 400; }
         </style>`,
         {html: true}
         );
@@ -250,7 +262,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', ${GA_TAG});
+      gtag('config', "${GA_TAG}");
       </script>
       <script>
 //      window.CONFIG.domainBaseUrl = "https://sixeleven.in";
